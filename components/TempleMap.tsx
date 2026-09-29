@@ -16,12 +16,12 @@ function Earth({ night, onSelect, temples }: { night:boolean; onSelect:(t:Temple
   const group = useRef<THREE.Group>(null)
   const earth = useTexture("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg")
   const lights = useTexture("https://threejs.org/examples/textures/planets/earth_lights_2048.png")
-  useFrame((_,delta)=>{ if(group.current) group.current.rotation.y += delta*0.009 })
-  const markers = useMemo(()=>temples.map(t=>({t,position:latLon(t.latitude,t.longitude,1.035)})),[temples])
+  const markers = useMemo(()=>temples.map(t=>({t,position:latLon(t.latitude,t.longitude,1.018)})),[temples])
+  useFrame((_,delta)=>{ if(group.current) group.current.rotation.y += delta*0.0035 })
   return <group ref={group}>
-    <mesh><sphereGeometry args={[1,96,96]}/><meshStandardMaterial map={earth} emissiveMap={night?lights:undefined} emissive={night?new THREE.Color("#fff0c7"):new THREE.Color("#000000")} emissiveIntensity={night?.9:0} roughness={1}/></mesh>
-    {markers.map(({t,position})=><group key={t.id} position={position}><mesh onClick={e=>{e.stopPropagation();onSelect(t)}}><sphereGeometry args={[.022,18,18]}/><meshBasicMaterial color="#f4c44f"/></mesh><mesh scale={[1.8,1.8,1.8]}><sphereGeometry args={[.022,12,12]}/><meshBasicMaterial color="#f4c44f" transparent opacity={.1}/></mesh></group>)}
-    <mesh><sphereGeometry args={[1.045,96,96]}/><meshBasicMaterial color="#e7b36c" transparent opacity={.055} side={THREE.BackSide}/></mesh>
+    <mesh><sphereGeometry args={[1,128,128]}/><meshStandardMaterial map={earth} emissiveMap={night?lights:undefined} emissive={night?new THREE.Color("#f5d9a0"):new THREE.Color("#000") } emissiveIntensity={night?.72:0} roughness={1}/></mesh>
+    {markers.map(({t,position})=><group key={t.id} position={position}><mesh onClick={e=>{e.stopPropagation();onSelect(t)}}><sphereGeometry args={[.014,16,16]}/><meshBasicMaterial color="#f5c75a"/></mesh><mesh scale={[2.5,2.5,2.5]}><sphereGeometry args={[.014,12,12]}/><meshBasicMaterial color="#f5c75a" transparent opacity={.06}/></mesh></group>)}
+    <mesh scale={[1.012,1.012,1.012]}><sphereGeometry args={[1,128,128]}/><meshBasicMaterial color="#8fc7e8" transparent opacity={.045} blending={THREE.AdditiveBlending} side={THREE.BackSide}/></mesh>
   </group>
 }
 
@@ -29,13 +29,13 @@ export default function TempleMap({ temples }:{temples:Temple[]}) {
   const [night,setNight]=useState(false)
   const [selected,setSelected]=useState<Temple|null>(null)
   const mapsUrl=selected?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selected.name}, ${selected.address}, ${selected.city}, ${selected.province}`)}`:""
-  return <div style={{position:'relative',height:'clamp(500px,70vw,680px)',borderRadius:24,overflow:'hidden',background:night?'#020611':'#eaf3f7',boxShadow:'0 18px 50px rgba(38,30,20,.16)'}}>
-    <Canvas camera={{position:[0,0,2.75],fov:38}} dpr={[1,2]}>
-      <ambientLight intensity={night?.13:.72}/><directionalLight position={night?[-3,2,4]:[3,2,4]} intensity={night?.5:1.7}/>
-      {night&&<Stars radius={8} depth={4} count={2400} factor={2} fade speed={.22}/>}<Suspense fallback={null}><Earth night={night} onSelect={setSelected} temples={temples}/></Suspense>
-      <OrbitControls enablePan={false} minDistance={1.55} maxDistance={4.5} enableDamping dampingFactor={.07} rotateSpeed={.45} zoomSpeed={.65}/>
+  return <div style={{position:'relative',height:'clamp(500px,72vw,700px)',overflow:'hidden',background:night?'#01040b':'#f5f7f8'}}>
+    <Canvas camera={{position:[0,0,2.7],fov:36}} dpr={[1,2]} gl={{antialias:true}}>
+      <ambientLight intensity={night?.08:.48}/><directionalLight position={night?[-4,1,4]:[4,2,5]} intensity={night?.38:1.55}/>
+      {night&&<Stars radius={9} depth={5} count={1800} factor={1.6} saturation={0} fade speed={.12}/>}<Suspense fallback={null}><Earth night={night} onSelect={setSelected} temples={temples}/></Suspense>
+      <OrbitControls enablePan={false} minDistance={1.48} maxDistance={4.2} enableDamping dampingFactor={.055} rotateSpeed={.34} zoomSpeed={.55}/>
     </Canvas>
-    <div style={{position:'absolute',top:16,right:16,display:'flex',gap:8,pointerEvents:'none'}}><button aria-label="Toggle day and night" onClick={()=>setNight(v=>!v)} style={{pointerEvents:'auto',border:'1px solid rgba(0,0,0,.08)',borderRadius:13,padding:'10px 14px',background:'rgba(255,255,255,.92)',cursor:'pointer',fontWeight:800,boxShadow:'0 4px 16px rgba(0,0,0,.08)'}}>{night?'☀️ Day':'🌙 Night'}</button></div>
-    {selected&&<div style={{position:'absolute',left:15,bottom:18,maxWidth:'min(360px,calc(100% - 30px))',background:'rgba(255,255,255,.97)',borderRadius:18,padding:17,boxShadow:'0 14px 35px rgba(0,0,0,.2)',border:'1px solid #e7ddd1'}}><button aria-label="Close" onClick={()=>setSelected(null)} style={{float:'right',border:0,background:'transparent',fontSize:21,cursor:'pointer'}}>×</button><div style={{fontSize:23}}>☸️</div><strong style={{display:'block',marginTop:5,lineHeight:1.3}}>{selected.name}</strong><div style={{fontSize:13,color:'#665d55',marginTop:5,lineHeight:1.45}}>{selected.address}, {selected.city}, {selected.province}</div><div style={{display:'flex',gap:14,marginTop:13,flexWrap:'wrap'}}><a href={`/temples/${selected.id}`} style={{fontWeight:800,color:'#70431f'}}>Temple Details →</a><a href={mapsUrl} target="_blank" rel="noreferrer" style={{fontWeight:800,color:'#70431f'}}>Google Maps ↗</a></div></div>}
+    <div style={{position:'absolute',top:18,right:18}}><button aria-label="Toggle day and night" onClick={()=>setNight(v=>!v)} style={{border:'1px solid rgba(255,255,255,.28)',borderRadius:999,padding:'9px 13px',background:night?'rgba(10,14,23,.68)':'rgba(255,255,255,.78)',backdropFilter:'blur(12px)',color:night?'#fff':'#302820',cursor:'pointer',fontWeight:700,fontSize:13}}>{night?'☀️ Day':'🌙 Night'}</button></div>
+    {selected&&<div style={{position:'absolute',left:18,bottom:18,maxWidth:'min(360px,calc(100% - 36px))',background:'rgba(255,255,255,.94)',backdropFilter:'blur(14px)',borderRadius:16,padding:16,boxShadow:'0 14px 38px rgba(0,0,0,.18)',border:'1px solid rgba(255,255,255,.8)'}}><button aria-label="Close" onClick={()=>setSelected(null)} style={{float:'right',border:0,background:'transparent',fontSize:20,cursor:'pointer'}}>×</button><div style={{fontSize:21}}>☸️</div><strong style={{display:'block',marginTop:4,lineHeight:1.3}}>{selected.name}</strong><div style={{fontSize:13,color:'#665d55',marginTop:5,lineHeight:1.45}}>{selected.address}, {selected.city}, {selected.province}</div><div style={{display:'flex',gap:14,marginTop:12,flexWrap:'wrap'}}><a href={`/temples/${selected.id}`} style={{fontWeight:800,color:'#70431f'}}>Temple Details →</a><a href={mapsUrl} target="_blank" rel="noreferrer" style={{fontWeight:800,color:'#70431f'}}>Google Maps ↗</a></div></div>}
   </div>
 }
