@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/leaflet": "latest",
+    "leaflet": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
