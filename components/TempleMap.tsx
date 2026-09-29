@@ -16,10 +16,18 @@ export default function TempleMap({ temples }: { temples: Temple[] }) {
       map = L.map(mapRef.current).setView([56.1304, -106.3468], 4)
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap contributors" }).addTo(map)
 
+      const templeIcon = L.divIcon({
+        className: "temple-dharma-marker",
+        html: '<span style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#fff8ef;border:2px solid #7a451f;box-shadow:0 2px 7px rgba(0,0,0,.28);font-size:27px;line-height:1">☸️</span>',
+        iconSize: [42, 42],
+        iconAnchor: [21, 21],
+        popupAnchor: [0, -20],
+      })
+
       temples.forEach(t => {
         const mapsQuery = encodeURIComponent(`${t.name}, ${t.address}, ${t.city}, ${t.province}`)
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
-        const marker = L.marker([t.latitude, t.longitude]).addTo(map)
+        const marker = L.marker([t.latitude, t.longitude], { icon: templeIcon }).addTo(map)
         marker.bindPopup(`
           <div style="min-width:180px">
             <strong>${t.name.replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c] || c))}</strong>
