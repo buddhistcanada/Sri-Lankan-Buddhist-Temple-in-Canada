@@ -1,57 +1,41 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { Suspense, useMemo, useRef, useState } from "react"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { OrbitControls, Stars, useTexture } from "@react-three/drei"
+import * as THREE from "three"
 import type { Temple } from "../data/temples"
 
+function Earth({ night, onSelect, temples }: { night: boolean; onSelect: (t: Temple) => void; temples: Temple[] }) {
+  const group = useRef<THREE.Group>(null)
+  const texture = useTexture("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg")
+  const lights = useTexture("https://threejs.org/examples/textures/planets/earth_lights_2048.png")
+  useFrame((_, delta) => { if (group.current) group.current.rotation.y += delta * 0.018 })
+  const markers = useMemo(() => temples.map(t => {
+    const lat = t.latitude * Math.PI / 180
+    const lon = t.longitude * Math.PI / 180
+    const r = 1.035
+    return { t, position: [r * Math.cos(lat) * Math.cos(lon), r * Math.sin(lat), -r * Math.cos(lat) * Math.sin(lon)] as [number,number,number] }
+  }), [temples])
+  return <group ref={group}>
+    <mesh><sphereGeometry args={[1,64,64]} /><meshStandardMaterial map={texture} emissiveMap={night ? lights : undefined} emissive={night ? new THREE.Color("#fff0c7") : new THREE.Color("#000000")} emissiveIntensity={night ? 0.8 : 0} roughness={1}/></mesh>
+    {markers.map(({t,position}) => <group key={t.id} position={position}><mesh onClick={(e)=>{e.stopPropagation();onSelect(t)}}><sphereGeometry args={[0.035,16,16]}/><meshBasicMaterial color="#f2c14e"/></mesh></group>)}
+    <mesh><sphereGeometry args={[1.035,64,64]} /><meshBasicMaterial color="#d8b27a" transparent opacity={0.08} side={THREE.BackSide}/></mesh>
+  </group>
+}
+
 export default function TempleMap({ temples }: { temples: Temple[] }) {
-  const mapRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let map: any
-    let cancelled = false
-    const load = async () => {
-      const L = await import("leaflet")
-      await import("leaflet/dist/leaflet.css")
-      if (cancelled || !mapRef.current) return
-      map = L.map(mapRef.current).setView([56.1304, -106.3468], 4)
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap contributors" }).addTo(map)
-
-      const templeIcon = L.divIcon({
-        className: "temple-dharma-marker",
-        html: '<span style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#fff8ef;border:2px solid #7a451f;box-shadow:0 2px 7px rgba(0,0,0,.28);font-size:27px;line-height:1">☸️</span>',
-        iconSize: [42, 42],
-        iconAnchor: [21, 21],
-        popupAnchor: [0, -20],
-      })
-
-      temples.forEach(t => {
-        const mapsQuery = encodeURIComponent(`${t.name}, ${t.address}, ${t.city}, ${t.province}`)
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
-        const marker = L.marker([t.latitude, t.longitude], { icon: templeIcon }).addTo(map)
-        marker.bindPopup(`
-          <div style="min-width:180px">
-            <strong>${t.name.replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c] || c))}</strong>
-            <br>${t.city}, ${t.province}
-            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-              <a href="/temples/${t.id}" style="font-weight:700">Temple details</a>
-              <a href="${mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
-            </div>
-          </div>
-        `)
-      })
-
-      if (temples.length === 1) {
-        map.setView([temples[0].latitude, temples[0].longitude], 12)
-      } else if (temples.length > 1) {
-        map.fitBounds(temples.map(t => [t.latitude, t.longitude] as [number, number]), { padding: [30, 30] })
-      }
-    }
-    load()
-    return () => { cancelled = true; map?.remove() }
-  }, [temples])
-
-  return <div>
-    <div ref={mapRef} style={{ height: 440, width: "100%", borderRadius: 16, overflow: "hidden", border: "1px solid #d6d3d1" }} aria-label="Interactive map of Sri Lankan Buddhist temples in Canada" />
-    <p style={{ fontSize: 12, color: '#666', marginTop: 8 }}>Map data © OpenStreetMap contributors. Temple information is from public sources.</p>
+  const [night, setNight] = useState(false)
+  const [selected, setSelected] = useState<Temple | null>(null)
+  const mapsUrl = selected ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selected.name}, ${selected.address}, ${selected.city}, ${selected.province}`)}` : ""
+  return <div style={{position:'relative',height:520,borderRadius:18,overflow:'hidden',background:night?'#020712':'#dcebf5'}}>
+    <Canvas camera={{position:[0,0,3.1],fov:42}} dpr={[1,2]}>
+      <ambientLight intensity={night ? 0.16 : 0.7}/><directionalLight position={[3,2,4]} intensity={night ? 0.35 : 1.8}/>
+      {night && <Stars radius={8} depth={3} count={1800} factor={2} fade speed={0.3}/>}<Suspense fallback={null}><Earth night={night} onSelect={setSelected} temples={temples}/></Suspense>
+      <OrbitControls enablePan={false} minDistance={1.8} maxDistance={4.2} enableDamping dampingFactor={0.08}/>
+    </Canvas>
+    <div style={{position:'absolute',top:14,left:14,right:14,display:'flex',justifyContent:'space-between',alignItems:'center',pointerEvents:'none'}}><div style={{background:'rgba(255,255,255,.9)',padding:'9px 13px',borderRadius:12,fontWeight:800,fontSize:13,pointerEvents:'auto'}}>🌍 Canada · {temples.length} locations</div><button onClick={()=>setNight(v=>!v)} style={{pointerEvents:'auto',border:0,borderRadius:12,padding:'9px 13px',background:'rgba(255,255,255,.92)',cursor:'pointer',fontWeight:800}}>{night?'☀️ Day':'🌙 Night'}</button></div>
+    <div style={{position:'absolute',bottom:14,left:14,right:14,display:'flex',justifyContent:'center',pointerEvents:'none'}}><div style={{background:'rgba(20,25,32,.78)',color:'#fff',padding:'8px 13px',borderRadius:999,fontSize:12}}>Drag to rotate · Pinch/scroll to zoom · Touch a golden marker</div></div>
+    {selected && <div style={{position:'absolute',left:14,bottom:55,maxWidth:330,background:'rgba(255,255,255,.97)',borderRadius:16,padding:16,boxShadow:'0 12px 30px rgba(0,0,0,.2)'}}><button onClick={()=>setSelected(null)} style={{float:'right',border:0,background:'transparent',fontSize:20,cursor:'pointer'}}>×</button><div style={{fontSize:23}}>☸️</div><strong style={{display:'block',marginTop:5}}>{selected.name}</strong><div style={{fontSize:13,color:'#665d55',marginTop:5}}>{selected.address}, {selected.city}, {selected.province}</div><div style={{display:'flex',gap:8,marginTop:12}}><a href={`/temples/${selected.id}`} style={{fontWeight:800,color:'#70431f'}}>Details</a><a href={mapsUrl} target="_blank" rel="noreferrer" style={{fontWeight:800,color:'#70431f'}}>Google Maps ↗</a></div></div>}
   </div>
 }
