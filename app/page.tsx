@@ -19,11 +19,13 @@ export default function Home() {
     return matches.sort((a, b) => a.id === firstTempleId ? -1 : b.id === firstTempleId ? 1 : 0)
   }, [query, province])
 
+  const contentWidth = 1040
+
   return (
     <main style={{ minHeight:"100vh", background:"linear-gradient(180deg,#f7f4ef 0%,#f3efe8 52%,#faf9f6 100%)", color:"#2b241e" }}>
-      <header style={{ backgroundImage:"linear-gradient(100deg,rgba(48,25,13,.97),rgba(104,57,28,.88)),url('/IMG_0323.JPG')", backgroundSize:"cover", backgroundPosition:"center", color:"white", padding:"18px 24px 74px", boxShadow:"0 12px 34px rgba(70,40,15,.15)" }}>
-        <div style={{maxWidth:1280,margin:"0 auto"}}>
-          <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:24,marginBottom:62}}>
+      <header style={{ backgroundImage:"linear-gradient(100deg,rgba(48,25,13,.97),rgba(104,57,28,.88)),url('/IMG_0323.JPG')", backgroundSize:"cover", backgroundPosition:"center", color:"white", padding:"18px 24px 76px", boxShadow:"0 12px 34px rgba(70,40,15,.15)" }}>
+        <div style={{maxWidth:contentWidth,margin:"0 auto"}}>
+          <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:24,marginBottom:66}}>
             <Link href="/" style={{color:'#fff',textDecoration:'none',fontWeight:850,fontSize:16,letterSpacing:.1}}>☸️ Sri Lankan Buddhist Temples in Canada</Link>
             <div style={{display:'flex',gap:26,fontSize:14,fontWeight:750,flexWrap:'wrap'}}>
               <Link href="/" style={{color:'#fff',textDecoration:'none'}}>Home</Link>
@@ -31,15 +33,15 @@ export default function Home() {
               <Link href="/contact" style={{color:'#fff',textDecoration:'none'}}>Contact Us</Link>
             </div>
           </nav>
-          <div style={{maxWidth:1120,margin:"0 auto",textAlign:"left"}}>
+          <div style={{maxWidth:900,margin:"0 auto",textAlign:"center"}}>
             <div style={{fontSize:12,letterSpacing:2,textTransform:"uppercase",opacity:.78,marginBottom:14,fontWeight:750}}>Canada Buddhist Temple Directory</div>
-            <h1 style={{margin:0,fontSize:"clamp(38px,5vw,66px)",lineHeight:1.03,letterSpacing:-2.4,maxWidth:1000}}>Find Sri Lankan Buddhist temples across Canada</h1>
-            <p style={{margin:"20px 0 0",maxWidth:850,fontSize:"clamp(16px,1.55vw,19px)",lineHeight:1.65,color:"rgba(255,255,255,.9)"}}>A public directory designed to help people discover temples, monasteries, meditation centres and Buddhist communities across Canada.</p>
+            <h1 style={{margin:0,fontSize:"clamp(38px,5vw,64px)",lineHeight:1.04,letterSpacing:-2.2}}>Find Sri Lankan Buddhist temples across Canada</h1>
+            <p style={{margin:"20px auto 0",maxWidth:760,fontSize:"clamp(16px,1.55vw,19px)",lineHeight:1.65,color:"rgba(255,255,255,.9)"}}>A public directory designed to help people discover temples, monasteries, meditation centres and Buddhist communities across Canada.</p>
           </div>
         </div>
       </header>
 
-      <section style={{maxWidth:1280,margin:"-42px auto 0",padding:"0 24px 72px",position:"relative"}}>
+      <section style={{maxWidth:contentWidth,margin:"-42px auto 0",padding:"0 24px 72px",position:"relative"}}>
         <div style={{background:"rgba(255,255,255,.98)",backdropFilter:"blur(10px)",border:"1px solid #e4dbd0",borderRadius:20,padding:"18px 20px 16px",boxShadow:"0 18px 42px rgba(62,43,25,.12)"}}>
           <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) 260px",gap:12}}>
             <input aria-label="Search temples" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search by temple, city or province..." style={{width:"100%",padding:"15px 17px",border:"1px solid #d7cec3",borderRadius:12,fontSize:16,background:"#fff",outline:"none",boxSizing:"border-box"}}/>
