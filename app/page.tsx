@@ -7,6 +7,7 @@ import TempleMap from "../components/TempleMap"
 
 const provinces = ["All Provinces", "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan"]
 const firstTempleId = "sri-lankan-buddhist-society-calgary"
+const heroImage = "https://raw.githubusercontent.com/buddhistcanada/Sri-Lankan-Buddhist-Temple-in-Canada/main/IMG_0323.JPG"
 
 export default function Home() {
   const [query, setQuery] = useState("")
@@ -23,8 +24,10 @@ export default function Home() {
 
   return (
     <main style={{ minHeight:"100vh", background:"linear-gradient(180deg,#f7f4ef 0%,#f3efe8 52%,#faf9f6 100%)", color:"#2b241e" }}>
-      <header style={{ backgroundImage:"linear-gradient(100deg,rgba(48,25,13,.97),rgba(104,57,28,.88)),url('/IMG_0323.JPG')", backgroundSize:"cover", backgroundPosition:"center", color:"white", padding:"18px 24px 76px", boxShadow:"0 12px 34px rgba(70,40,15,.15)" }}>
-        <div style={{maxWidth:contentWidth,margin:"0 auto"}}>
+      <header style={{ position:"relative", overflow:"hidden", background:"linear-gradient(100deg,rgba(48,25,13,.98),rgba(104,57,28,.90)),#68391c", color:"white", padding:"18px 24px 76px", boxShadow:"0 12px 34px rgba(70,40,15,.15)" }}>
+        <div aria-hidden="true" style={{ position:"absolute", left:0, top:0, width:"42%", height:"100%", backgroundImage:`linear-gradient(90deg,rgba(48,25,13,.22),rgba(48,25,13,.92)),url('${heroImage}')`, backgroundSize:"cover", backgroundPosition:"left center", backgroundRepeat:"no-repeat", opacity:.82 }} />
+        <div aria-hidden="true" style={{ position:"absolute", left:0, bottom:0, width:"48%", height:2, background:"linear-gradient(90deg,rgba(255,220,170,.65),transparent)" }} />
+        <div style={{maxWidth:contentWidth,margin:"0 auto",position:"relative",zIndex:1}}>
           <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:24,marginBottom:66}}>
             <Link href="/" style={{color:'#fff',textDecoration:'none',fontWeight:850,fontSize:16,letterSpacing:.1}}>☸️ Sri Lankan Buddhist Temples in Canada</Link>
             <div style={{display:'flex',gap:26,fontSize:14,fontWeight:750,flexWrap:'wrap'}}>
