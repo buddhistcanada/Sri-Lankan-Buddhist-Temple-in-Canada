@@ -22,6 +22,7 @@ export default async function TempleDetails({ params }: { params: Promise<{ id: 
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '42px 20px 64px' }}>
         <div style={{ fontSize: 13, color: '#876f5b', fontWeight: 700, marginBottom: 12 }}>TEMPLE DIRECTORY · {temple.province.toUpperCase()}</div>
         <article style={{ background: '#fff', border: '1px solid #e4dbcf', borderRadius: 24, overflow: 'hidden', boxShadow: '0 12px 35px rgba(62,42,24,.08)' }}>
+          {temple.photoUrl && <div style={{ height: 'clamp(220px,34vw,390px)', background: '#eee5db', overflow: 'hidden' }}><img src={temple.photoUrl} alt={`${temple.name} Buddhist temple`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /></div>}
           <div style={{ padding: '34px 34px 28px', background: 'linear-gradient(135deg,#fffaf3,#f4eadc)' }}>
             <div style={{ width: 58, height: 58, borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid #e1d1bd', fontSize: 32, marginBottom: 18 }}>☸️</div>
             <h1 style={{ fontSize: 'clamp(28px,5vw,44px)', lineHeight: 1.1, margin: 0, letterSpacing: '-.025em' }}>{temple.name}</h1>
@@ -45,6 +46,7 @@ export default async function TempleDetails({ params }: { params: Promise<{ id: 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24 }}>
               <a href={mapsUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 19px', borderRadius: 12, background: '#6b3f1d', color: '#fff', textDecoration: 'none', fontWeight: 800 }}>📍 Open in Google Maps</a>
               {temple.website && <a href={temple.website} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 19px', borderRadius: 12, border: '1px solid #d8c8b7', background: '#fff', color: '#6b3f1d', textDecoration: 'none', fontWeight: 800 }}>🌐 Official website</a>}
+              {temple.photoSourceUrl && <a href={temple.photoSourceUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 19px', borderRadius: 12, border: '1px solid #d8c8b7', background: '#fff', color: '#6b3f1d', textDecoration: 'none', fontWeight: 800 }}>📷 Temple photos</a>}
             </div>
 
             <div style={{ marginTop: 30, paddingTop: 20, borderTop: '1px solid #eee5db', fontSize: 13, color: '#7b7068' }}>
